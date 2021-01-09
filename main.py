@@ -1,9 +1,10 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLineEdit, QPushButton, QScrollArea, QHBoxLayout, QCompleter,
                              QWidget, QVBoxLayout, QLabel, QSpacerItem, QSizePolicy)
-from PyQt5.QtGui import *
-from PyQt5.QtCore import Qt
-import random, sys, os.path
+from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtCore import (Qt, QSize)
+import random, sys, os.path, json
+import requests
 
 
 # create widget that will add and remove characters from the roulette pool
@@ -65,14 +66,16 @@ class MyWindow(QMainWindow):
 
     def importChar(self):
         if os.path.isfile('Hero_List.txt'):
-            self.importStatus.setText("Imported!")
-            self.importStatus.setStyleSheet("color: #32CD32")
-            self.importStatus.adjustSize()
+            self.numChar = 0
             with open("Hero_List.txt") as file_in:
                 lines = []
                 for line in file_in:
                     line = line.rstrip('\n')
                     self.addCharToList(line)
+                    self.numChar = self.numChar + 1
+            self.importStatus.setText("Imported!" + str(self.numChar) + " characters in the pool")
+            self.importStatus.setStyleSheet("color: #32CD32")
+            self.importStatus.adjustSize()
 
         else:
             self.importStatus.setText("Error: please make sure that a 'Hero_List.txt' file is in your directory")
@@ -82,6 +85,11 @@ class MyWindow(QMainWindow):
     def initUI(self):
         self.controls = QWidget()
         self.controlsLayout = QVBoxLayout()
+
+        # read json file and get jepg
+        with open('e7dbherodata.json') as json_file:
+            self.data = json.load(json_file)
+
         self.userList = []
 
         # list of characters, separated by star grade
@@ -155,28 +163,30 @@ class MyWindow(QMainWindow):
 
         self.label5 = QtWidgets.QLabel(self)
         self.label5.setText("")
-        self.label5.move(540, 100)
+        self.label5.move(650, 85)
 
         self.label6 = QtWidgets.QLabel(self)
         self.label6.setText("")
-        self.label6.move(540, 115)
+        self.label6.move(760, 85)
 
         self.label7 = QtWidgets.QLabel(self)
         self.label7.setText("<h1>Team 2:</h1>")
         self.label7.adjustSize()
-        self.label7.move(540, 180)
+        self.label7.move(540, 200)
 
         self.label8 = QtWidgets.QLabel(self)
         self.label8.setText("")
-        self.label8.move(540, 205)
+        self.label8.move(540, 225)
 
         self.label9 = QtWidgets.QLabel(self)
         self.label9.setText("")
-        self.label9.move(540, 220)
+        self.label9.move(650, 225)
 
         self.label10 = QtWidgets.QLabel(self)
         self.label10.setText("")
-        self.label10.move(540, 235)
+        self.label10.move(760, 225)
+
+        self.image = QImage()
 
         self.scroll = QScrollArea()
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
@@ -216,6 +226,7 @@ class MyWindow(QMainWindow):
         self.importStatus.setText("")
         self.importStatus.move(360, 30)
 
+
     def updateDisplay(self, text):
         for widget in self.widgets:
             if text.lower() in widget.name.lower():
@@ -223,9 +234,10 @@ class MyWindow(QMainWindow):
             else:
                 widget.hide()
 
-    def updateText(self):
-        self.label4.adjustSize()
-        self.label6.adjustSize()
+    def displayImage(self, url, label):
+        self.image.loadFromData(requests.get(url).content)
+        label.setPixmap(QtGui.QPixmap(self.image).scaled(100, 100, Qt.KeepAspectRatio))
+        label.adjustSize()
 
     def RandRoll(self):
 
@@ -238,32 +250,38 @@ class MyWindow(QMainWindow):
 
         selectedString = random.choice(self.userList)
         self.tempList.append(selectedString)
-        self.label4.setText(selectedString)
+        url_img = self.data[selectedString]['assets']['icon']
+        self.displayImage(url_img, self.label4)
         self.userList.remove(selectedString)
 
         selectedString = random.choice(self.userList)
         self.tempList.append(selectedString)
-        self.label5.setText(selectedString)
+        url_img = self.data[selectedString]['assets']['icon']
+        self.displayImage(url_img, self.label5)
         self.userList.remove(selectedString)
 
         selectedString = random.choice(self.userList)
         self.tempList.append(selectedString)
-        self.label6.setText(selectedString)
+        url_img = self.data[selectedString]['assets']['icon']
+        self.displayImage(url_img, self.label6)
         self.userList.remove(selectedString)
 
         selectedString = random.choice(self.userList)
         self.tempList.append(selectedString)
-        self.label8.setText(selectedString)
+        url_img = self.data[selectedString]['assets']['icon']
+        self.displayImage(url_img, self.label8)
         self.userList.remove(selectedString)
 
         selectedString = random.choice(self.userList)
         self.tempList.append(selectedString)
-        self.label9.setText(selectedString)
+        url_img = self.data[selectedString]['assets']['icon']
+        self.displayImage(url_img, self.label9)
         self.userList.remove(selectedString)
 
         selectedString = random.choice(self.userList)
         self.tempList.append(selectedString)
-        self.label10.setText(selectedString)
+        url_img = self.data[selectedString]['assets']['icon']
+        self.displayImage(url_img, self.label10)
         self.userList.remove(selectedString)
 
         # add back all "removed" names into userList
