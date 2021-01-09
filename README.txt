@@ -1,4 +1,4 @@
----- E7 Roullete v.0.1.1-----------------
+---- E7 Roullete v.0.1.2 -----------------
 
 To make a importable file, make sure that you have a 'Hero_List.txt' file
 with your list of characters in the following format
