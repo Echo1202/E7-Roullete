@@ -87,8 +87,13 @@ class MyWindow(QMainWindow):
         self.controlsLayout = QVBoxLayout()
 
         # read json file and get jepg
-        with open('e7dbherodata.json') as json_file:
-            self.data = json.load(json_file)
+        try:
+            with open('e7dbherodata.json') as json_file:
+                self.data = json.load(json_file)
+        except:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage("Missing e7assets.json file")
+            error_dialog.exec_()
 
         self.userList = []
 
@@ -122,7 +127,7 @@ class MyWindow(QMainWindow):
                        'Magic Scholar Doris','Mascot Hazel', 'Mercenary Helga', 'Mirsa', 'Mistychain', 'Montmorancy',
                        'Mucacha', 'Nemunas','Otillie', 'Pearlhorizon', 'Pyllis', 'Ras', 'Requiemroar',
                        'Researcher Carrot', 'Righteous Thief Roozid','Rikoris', 'Rima', 'Roozid', 'Sonia', 'Sven',
-                       'Taranor Guard', 'Taranor Royal Guard', 'Tieria', 'Wanda')
+                       'Taranor Guard', 'Taranor Royal Guard', 'Tieria', 'Wanda', 'Zealot Carmainerose')
         charactersAll = characters5 + characters4 + characters3
 
         self.widgets = []
@@ -242,7 +247,9 @@ class MyWindow(QMainWindow):
     def RandRoll(self):
 
         if (len(self.userList)) < 6:
-            self.label4.setTest("<h1>Not enough characters chosen</h1>")
+            self.label4.setText("<h1>Not enough characters in pool</h1>")
+            self.label4.setStyleSheet("color: #FF0000")
+            self.label4.adjustSize()
             return
 
         #create a separate list to save "names" for rerolls
