@@ -8,7 +8,6 @@ with your list of characters in the following format
 etc...
 
 !!make sure that there are no empty lines or extra lines in the text doc!!
-!!adding Ray crashes the program for some reason, untill I fix it assume that if the program crashes, Ray is on one of the teams!!
 
 Import shows how many characters were imported 
 
